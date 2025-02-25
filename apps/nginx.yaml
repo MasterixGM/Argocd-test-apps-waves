@@ -28,6 +28,23 @@ spec:
       prune: true
       selfHeal: true
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+  namespace: nginx
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
+    argocd.argoproj.io/dependency: nginx
+spec:
+  selector:
+    app: nginx
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  type: LoadBalancer
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -36,7 +53,7 @@ metadata:
   labels:
     app: nginx
   annotations:
-    argocd.argoproj.io/sync-wave: "5"
+    argocd.argoproj.io/sync-wave: "6"
     argocd.argoproj.io/dependency: nginx
 spec:
   replicas: 2
@@ -53,20 +70,3 @@ spec:
         image: nginx:latest
         ports:
         - containerPort: 80
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: nginx
-  namespace: nginx
-  annotations:
-    argocd.argoproj.io/sync-wave: "6"
-    argocd.argoproj.io/dependency: nginx
-spec:
-  selector:
-    app: nginx
-  ports:
-  - protocol: TCP
-    port: 80
-    targetPort: 80
-  type: LoadBalancer
